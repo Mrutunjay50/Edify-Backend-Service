@@ -1,4 +1,4 @@
-const Student = require("../models/User");
+const Student = require("../models/Student");
 
 
 // exports.setTestScore = (req, res) => {

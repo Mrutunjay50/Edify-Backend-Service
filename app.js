@@ -17,8 +17,8 @@ const { v4: uuidv4 } = require("uuid");
 
 
 const corsOptions = {
-  // origin: "http://localhost:5173",
-  origin: 'https://edify-tau.vercel.app',
+  origin: "http://localhost:5173",
+  // origin: 'https://edify-tau.vercel.app',
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true, // Allow cookies, authentication headers, etc.
 };

@@ -57,6 +57,10 @@ const studentSchema = new Schema(
       type: String,
       default: "",
     },
+    profession : {
+      type: String,
+      default: "student",
+    },
     age: {
       type: Number,
       default: "",
@@ -169,7 +173,7 @@ studentSchema.add({
 studentSchema.methods.generateAuthToken = async function () {
   try {
     const token = jwt.sign(
-      { userId: this._id.toString() },
+      { userId: this._id.toString(), profession : this.profession },
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
