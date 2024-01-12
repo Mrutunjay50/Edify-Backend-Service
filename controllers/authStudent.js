@@ -1,11 +1,12 @@
 const bcrypt = require("bcrypt");
 const Student = require("../models/Student");
-
+const axios = require("axios")
 const { CCourses, SCourses } = require("../models/Courses");
 const io = require("../socket");
 
 exports.registerStudent = async (req, res, next) => {
   try {
+    let {googleAuth} = req.query;
     let { hasedPass, ...studentData } = req.body;
     const {
       email,
@@ -14,19 +15,31 @@ exports.registerStudent = async (req, res, next) => {
       schoolstudent,
       collegestudent,
     } = studentData;
-    hasedPass = await bcrypt.hash(req.body.password, 10);
+    
+    
 
     const existing_email = await Student.findOne({ email });
     const existing_user = await Student.findOne({ username });
-    if (existing_user) {
-      console.error("Username already exists.");
-      return res.status(400).json({ error: "Username already exists" });
-    } else if (existing_email) {
-      console.error("email already exists.");
-      return res.status(400).json({ error: "Email already exists" });
-    } else if (req.body.cPass !== req.body.password) {
-      console.error("make sure the password matches to the entered password");
-      return res.status(400).json({ error: "Passwords do not match" });
+    
+    if (googleAuth) {
+      // If it's a Google registration, check only for email existence
+      if (existing_email) {
+        console.error("Email already exists.");
+        return res.status(400).json({ error: "Email already exists" });
+      }
+    } else {
+      hasedPass = await bcrypt.hash(req.body.password, 10);
+      // If it's a normal registration, check for both email and username existence
+      if (existing_user) {
+        console.error("Username already exists.");
+        return res.status(400).json({ error: "Username already exists" });
+      } else if (existing_email) {
+        console.error("Email already exists.");
+        return res.status(400).json({ error: "Email already exists" });
+      } else if (req.body.cPass !== req.body.password) {
+        console.error("Make sure the password matches the entered password.");
+        return res.status(400).json({ error: "Passwords do not match" });
+      }
     }
 
     // create new user
@@ -71,41 +84,58 @@ exports.registerStudent = async (req, res, next) => {
 
 
 
-
-
-
-
-
 exports.login = async (req, res, next) => {
-  if(req.body.profession === "student"){
-    try {
-      console.log(req.body)
-      const user = await Student.findOne({ email: req.body.email });
+  try {
+    let user;
+
+    if (req.body.googleAccessToken) {
+      // Google sign-in
+      const { googleAccessToken } = req.body;
+
+      try {
+        const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: {
+            "Authorization": `Bearer ${googleAccessToken}`
+          }
+        });
+        console.log(response.data)
+
+        const {email} = response.data;
+
+        user = await Student.findOne({ email });
+
+        if (!user) {
+          return res.status(404).json({ message: "User doesn't exist!" });
+        }
+      } catch (error) {
+        return res.status(400).json({ message: "Invalid access token!", err : error });
+      }
+    } else {
+      // Normal login for students
+      const { email, password } = req.body;
+
+      user = await Student.findOne({ email });
+
       if (!user) {
-        return res.status(404).json("User not found");
+        return res.status(404).json({ message: "User not found" });
       }
-  
-      const validPassword = await bcrypt.compare(
-        req.body.password,
-        user.password
-      );
+
+      const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
-        return res.status(400).json("Incorrect password");
+        return res.status(400).json({ message: "Incorrect password" });
       }
-  
-      // Token generation
-      const token = await user.generateAuthToken();
-      // const maxAge = 60 * 60; // 1 hour in seconds
-      // res.cookie("jwt", token, { maxAge, secure: true, httpOnly: false });
-  
-      // Return the token and user data
-      res.status(200).json({ token, user });
-    } catch (error) {
-      console.error("Login error:", error);
-      res.status(500).json("Internal server error");
     }
+
+    // Token generation
+    const token = await user.generateAuthToken();
+
+    res.status(200).json({ user, token });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 exports.getUser = async (req, res, next) => {

@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start" : "node app.js",
+    "start": "node app.js",
     "nodemon": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.1469.0",
+    "axios": "^1.6.5",
     "bcrypt": "^5.1.1",
     "chai": "^4.3.10",
     "connect-mongodb-session": "^3.1.1",

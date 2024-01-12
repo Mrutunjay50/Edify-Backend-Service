@@ -46,7 +46,7 @@ const studentSchema = new Schema(
       unique: true,
     },
     password: {
-      required: true,
+      required: false,
       type: String,
     },
     contact: {
