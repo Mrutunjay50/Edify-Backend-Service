@@ -6,8 +6,7 @@ const io = require("../socket");
 
 exports.registerStudent = async (req, res, next) => {
   try {
-    let {googleAuth} = req.query;
-    let { hashedPass, ...studentData } = req.body;
+    let { hashedPass, googleAuth, ...studentData } = req.body;
     const {
       email,
       username,
@@ -21,13 +20,19 @@ exports.registerStudent = async (req, res, next) => {
     const existing_email = await Student.findOne({ email });
     const existing_user = await Student.findOne({ username });
     
-    if (googleAuth === true) {
+    if (googleAuth) {
       // If it's a Google registration, check only for email existence
       if (existing_email) {
         console.error("Email already exists.");
         return res.status(400).json({ error: "Email already exists" });
       }
     } else {
+
+      if (!req.body.password || req.body.cPass !== req.body.password) {
+        console.error("Make sure the password matches the entered password.");
+        return res.status(400).json({ error: "Passwords do not match" });
+      }
+
       hashedPass = await bcrypt.hash(req.body.password, 10);
       // If it's a normal registration, check for both email and username existence
       if (existing_user) {
