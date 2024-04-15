@@ -175,3 +175,24 @@ exports.getTestScore = async (req, res, next) => {
   // Send a response back to the client
   res.status(200).json({ message: "Questions added to the spreadsheet" });
 };
+
+
+exports.createTest = async (req, res) => {
+  try {
+    // Extract test data from request body
+    const testData = req.body;
+
+    // Create a new instance of the TestData model with the provided data
+    const newTestData = new TestData(testData);
+
+    // Save the new test data to the database
+    await newTestData.save();
+
+    // Return a success message
+    res.status(201).json({ message: 'Test data stored successfully' });
+  } catch (error) {
+    // Handle any errors that occur during data storage
+    console.error('Error storing test data:', error);
+    res.status(500).json({ message: 'An error occurred while storing test data' });
+  }
+};

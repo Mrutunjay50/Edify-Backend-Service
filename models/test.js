@@ -1,17 +1,54 @@
 const mongoose = require('mongoose');
 
-const testSchema = new mongoose.Schema({
-  className: String,
-  classSubject : String,
-  subjectChapter : String,
-  date: Date,
-  questions: [
-    {
-      questionText: String,
-      options: [String],
-      correctAnswerIndex: Number,
-    },
-  ], 
+const questionSchema = new mongoose.Schema({
+  prompt: {
+    type: String,
+    default: ''
+  },
+  options: {
+    type: [String],
+    default: ['', '', '', ''] // Array of 4 empty strings
+  },
+  correctOption: {
+    type: String,
+    default: ''
+  }
 });
 
-module.exports = mongoose.model('Test', testSchema); 
+const testDataSchema = new mongoose.Schema({
+  courseType: {
+    type: String,
+    default: ''
+  },
+  questionType: {
+    type: String,
+    default: ''
+  },
+  subject: {
+    type: String,
+    default: ''
+  },
+  classes: {
+    type: String,
+    default: ''
+  },
+  course: {
+    type: String,
+    default: ''
+  },
+  questions: {
+    type: [questionSchema], // Array of questions
+    default: function() {
+      // Populate the questions array with default values
+      return Array.from({ length: 10 }, () => ({
+        prompt: '',
+        options: ['', '', '', ''],
+        correctOption: ''
+      }));
+    }
+  }
+});
+
+const TestData = mongoose.model('TestData', testDataSchema);
+
+module.exports = TestData;

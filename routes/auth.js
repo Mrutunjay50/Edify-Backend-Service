@@ -12,6 +12,7 @@ router.put('/updateteacher/:id',  authTeacher.updateTeacher);
 router.put('/updaterecentseen', isAuth, authStudent.updateRecentSeen)
 router.put('/storeCompletion',isAuth, authStudent.updateCompletedVideos)
 router.get('/auth/getuser/student', authStudent.getUser);
+router.get('/auth/getuser/teacher', authTeacher.getUser);
 router.get('/auth/leadershipScores', authStudent.getAllUsersTotalScores);
 
 module.exports = router;
