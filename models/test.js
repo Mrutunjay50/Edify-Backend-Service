@@ -18,19 +18,23 @@ const questionSchema = new mongoose.Schema({
 const testDataSchema = new mongoose.Schema({
   courseType: {
     type: String,
-    default: ''
+    default: '',
+    required : true
   },
   questionType: {
     type: String,
-    default: ''
+    default: '',
+    required : true
   },
   subject: {
     type: String,
-    default: ''
+    default: '',
+    required : true
   },
   classes: {
     type: String,
-    default: ''
+    default: '',
+    required : true
   },
   course: {
     type: String,

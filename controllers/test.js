@@ -1,4 +1,4 @@
-const Test = require("../models/test");
+const TestData = require("../models/test");
 const { google } = require("googleapis");
 const dotenv = require("dotenv");
 
@@ -179,20 +179,66 @@ exports.getTestScore = async (req, res, next) => {
 
 exports.createTest = async (req, res) => {
   try {
+    console.log(req.body);
     // Extract test data from request body
-    const testData = req.body;
+    const { courseType, questionType, subject, classes, course, questions } = req.body;
 
     // Create a new instance of the TestData model with the provided data
-    const newTestData = new TestData(testData);
+    const newTestData = new TestData({
+      courseType,
+      questionType,
+      subject,
+      classes,
+      course,
+      questions
+    });
 
     // Save the new test data to the database
     await newTestData.save();
 
+
+    console.log(newTestData);
+
     // Return a success message
-    res.status(201).json({ message: 'Test data stored successfully' });
+    res.status(201).json({ message: 'TestData data stored successfully' });
   } catch (error) {
     // Handle any errors that occur during data storage
     console.error('Error storing test data:', error);
     res.status(500).json({ message: 'An error occurred while storing test data' });
+  }
+};
+
+
+exports.getAllTests = async (req, res) => {
+  try {
+    // Retrieve test data from the database
+    const testData = await TestData.find({}); // Assuming you have only one test data entry in the database
+    res.status(200).json(testData);
+  } catch (error) {
+    console.error('Error fetching test data:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Route to submit answers
+exports.submitScore = async (req, res) => {
+  try {
+    const { answers } = req.body;
+
+    // Retrieve test data from the database
+    const testData = await TestData.findOne({}); // Assuming you have only one test data entry in the database
+
+    // Calculate score
+    let score = 0;
+    testData.questions.forEach((question, index) => {
+      if (answers[index] === question.correctOption) {
+        score++;
+      }
+    });
+
+    res.status(200).json({ score });
+  } catch (error) {
+    console.error('Error submitting answers:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };

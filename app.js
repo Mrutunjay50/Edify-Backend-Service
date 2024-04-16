@@ -33,6 +33,7 @@ mongoose
   })
   .then(result => {
     const server = app.listen(process.env.PORT || 8800);
+    console.log("server is running in port :", (process.env.PORT || 8800))
     const io = require('./socket').init(server, {
       cors: corsOptions  // Use the same CORS options
     });
