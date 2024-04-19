@@ -181,24 +181,21 @@ exports.createTest = async (req, res) => {
   try {
     console.log(req.body);
     // Extract test data from request body
-    const { courseType, questionType, subject, classes, course, questions,testBy } = req.body;
+    const { courseType, questionType, subject, classes, course, questions, testBy } = req.body;
 
-    // Create a new instance of the TestData model with the provided data
-    const newTestData = new TestData({
-      courseType,
-      questionType,
-      subject,
-      classes,
-      course,
-      questions,
-      testBy
-    });
+      // Create a new instance of the TestData model with the provided data
+      const newTestData = new TestData({
+        courseType,
+        questionType,
+        subject,
+        classes,
+        course,
+        questions,
+        testBy
+      });
 
     // Save the new test data to the database
     await newTestData.save();
-
-
-    console.log(newTestData);
 
     // Return a success message
     res.status(201).json({ message: 'TestData data stored successfully' });
