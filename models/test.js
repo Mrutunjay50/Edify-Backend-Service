@@ -21,6 +21,11 @@ const testDataSchema = new mongoose.Schema({
     default: '',
     required : true
   },
+  testBy :{
+    type: String,
+    default: '',
+    required : true
+  },
   questionType: {
     type: String,
     default: '',
@@ -34,7 +39,6 @@ const testDataSchema = new mongoose.Schema({
   classes: {
     type: String,
     default: '',
-    required : true
   },
   course: {
     type: String,

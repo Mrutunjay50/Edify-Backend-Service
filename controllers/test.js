@@ -181,7 +181,7 @@ exports.createTest = async (req, res) => {
   try {
     console.log(req.body);
     // Extract test data from request body
-    const { courseType, questionType, subject, classes, course, questions } = req.body;
+    const { courseType, questionType, subject, classes, course, questions,testBy } = req.body;
 
     // Create a new instance of the TestData model with the provided data
     const newTestData = new TestData({
@@ -190,7 +190,8 @@ exports.createTest = async (req, res) => {
       subject,
       classes,
       course,
-      questions
+      questions,
+      testBy
     });
 
     // Save the new test data to the database
@@ -213,6 +214,18 @@ exports.getAllTests = async (req, res) => {
   try {
     // Retrieve test data from the database
     const testData = await TestData.find({}); // Assuming you have only one test data entry in the database
+    res.status(200).json(testData);
+  } catch (error) {
+    console.error('Error fetching test data:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.getOneTest = async (req, res) => {
+  try {
+    const {id} = req.params;
+    // Retrieve test data from the database
+    const testData = await TestData.findById(id); // Assuming you have only one test data entry in the database
     res.status(200).json(testData);
   } catch (error) {
     console.error('Error fetching test data:', error);
