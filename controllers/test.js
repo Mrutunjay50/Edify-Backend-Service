@@ -209,8 +209,17 @@ exports.createTest = async (req, res) => {
 
 exports.getAllTests = async (req, res) => {
   try {
-    // Retrieve test data from the database
-    const testData = await TestData.find({}); // Assuming you have only one test data entry in the database
+    let filter = {};
+    // Check if school or course parameters are present in the query
+    if (req.query.school && req.query.school !== 'undefined') {
+      filter.classes = req.query.school;
+    }
+    if (req.query.course && req.query.course !== 'undefined') {
+      filter.course = req.query.course;
+    }
+    // Retrieve test data from the database based on the filter
+    console.log(filter)
+    const testData = await TestData.find(filter);
     res.status(200).json(testData);
   } catch (error) {
     console.error('Error fetching test data:', error);
